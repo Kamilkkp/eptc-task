@@ -21,6 +21,9 @@ import { ConfigNames } from '@config/config-names.enum';
       }),
       inject: [ConfigService],
     }),
+    BullModule.registerQueue({
+      name: 'orderQueue',
+    }),
     OrdersModule,
     MealsModule,
     CategoriesModule,

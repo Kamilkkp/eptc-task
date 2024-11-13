@@ -9,6 +9,6 @@ export class CategoriesController {
 
   @Get('/')
   getCategories() {
-    // return available meal categories
+    return this.categoriesService.getAvailableCategories();
   }
 }

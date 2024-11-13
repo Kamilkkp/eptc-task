@@ -7,6 +7,6 @@ export class MealsController {
 
   @Get('/')
   getMeals() {
-    // return available meals
+    return this.mealsService.getAvailableMeals();
   }
 }
