@@ -1,7 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Job, Queue, Worker } from 'bullmq';
 import { v4 as uuid4 } from 'uuid';
 import { Meal } from '../meals/meal';
+import redisConfig from '../config/redis.config';
 import { MealDto } from './order.dto';
 import { OrderStatusValue } from './order-status.enum';
 
@@ -19,10 +24,7 @@ export class OrdersService {
 
   constructor() {
     this.orderQueue = new Queue('orderQueue', {
-      connection: {
-        host: process.env.REDIS_HOST || 'localhost',
-        port: Number(process.env.REDIS_PORT || '6379'),
-      },
+      connection: redisConfig,
     });
 
     this.orderWorker = new Worker(
@@ -31,15 +33,22 @@ export class OrdersService {
         await this.processOrder(job.data.id);
       },
       {
-        connection: {
-          host: process.env.REDIS_HOST || 'localhost',
-          port: Number(process.env.REDIS_PORT || '6379'),
-        },
+        connection: redisConfig,
       },
     );
   }
 
   async createOrder(meals: MealDto[]): Promise<OrderPayload> {
+    meals.forEach((meal) => {
+      const availableMeal = Meal.getAvailableMeals().find(
+        (availableMeal) => availableMeal.getName() === meal.name,
+      );
+
+      if (!availableMeal) {
+        throw new BadRequestException(`Meal ${meal.name} does not exist`);
+      }
+    });
+
     const order: OrderPayload = {
       id: uuid4(),
       status: OrderStatusValue.NEW,
