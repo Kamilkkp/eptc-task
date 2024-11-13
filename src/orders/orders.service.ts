@@ -96,11 +96,11 @@ export class OrdersService {
 
     order.data.status = OrderStatusValue.IN_THE_KITCHEN;
     await order.updateData(order.data);
-    await new Promise((resolve) => setTimeout(resolve, 550));
+    await new Promise((resolve) => setTimeout(resolve, 10000));
 
     order.data.status = OrderStatusValue.IN_DELIVERY;
     await order.updateData(order.data);
-    await new Promise((resolve) => setTimeout(resolve, 600));
+    await new Promise((resolve) => setTimeout(resolve, 10000));
 
     order.data.status = OrderStatusValue.DONE;
     await order.updateData(order.data);
